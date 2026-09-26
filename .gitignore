@@ -1,0 +1,17 @@
+# Secrets — real MySQL credentials + BilletWeb API keys. Never commit.
+config/config.php
+
+# Runtime state (regenerated at runtime, not versioned)
+storage/logs/*
+storage/cache/*
+storage/state/*
+!storage/logs/.gitkeep
+!storage/cache/.gitkeep
+!storage/state/.gitkeep
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp

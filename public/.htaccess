@@ -1,0 +1,31 @@
+# Toutes les requêtes passent par index.php, sauf les fichiers statiques réellement présents (assets/).
+Options -Indexes -MultiViews
+DirectoryIndex index.php
+
+# Sans ceci, certains hébergeurs servent les modules JS (.mjs, utilisés par pdf.js) avec un type MIME
+# générique : le navigateur refuse alors de les charger (aperçu PDF et décharge officielle inopérants).
+<IfModule mod_mime.c>
+  AddType text/javascript .mjs
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^ index.php [L]
+</IfModule>
+
+# Sécurité : jamais de fichiers cachés ni de sauvegardes accessibles
+<FilesMatch "(^\.|\.(bak|backup|old|orig|sql|md|lock|log|sh|ini|json|dist|example)$)">
+  Require all denied
+</FilesMatch>
+# Exception nommée : manifestes PWA (aucune donnée sensible dedans, doivent rester accessibles
+# malgré le blocage général des .json ci-dessus).
+<Files "manifest-public.json">
+  Require all granted
+</Files>
+<Files "manifest-admin.json">
+  Require all granted
+</Files>
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+</IfModule>

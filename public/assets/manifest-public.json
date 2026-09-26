@@ -1,0 +1,16 @@
+{
+  "name": "Journée Circuit",
+  "short_name": "Journée Circuit",
+  "description": "Décharge et espace participant Journée Circuit",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f4f4",
+  "theme_color": "#c21819",
+  "lang": "fr",
+  "icons": [
+    { "src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

@@ -249,6 +249,7 @@ final class ListingBuilder
 
         $decharge = $this->decharge($participant, $ov);
         $progress = $this->progress($participant, $decharge);
+        $dechargeDisplay = $this->dechargeDisplay($participant, $decharge);
 
         return [
             'entry'          => $entry,
@@ -282,7 +283,7 @@ final class ListingBuilder
             'onsite'         => $onsite,
             'remaining'      => $remaining,
             'payments'       => $pay['rows'],
-            'decharge'       => $decharge,
+            'decharge'       => $dechargeDisplay,
             'waiver_forced'  => $participant ? ($this->waiverOverrides[(int)$participant['id']] ?? null) : null,
             'progress'       => $progress,
             'ready'          => $progress['state'] === 'ready',
@@ -468,6 +469,28 @@ final class ListingBuilder
             return $forced;
         }
         return isset($this->waivers[$pid]) ? 'V' : '';
+    }
+
+    /**
+     * Valeur affichée dans la colonne D du Listing. Le 'V' automatique (décharge signée, sans forçage
+     * admin) ne doit pas donner l'impression d'un dossier bouclé pour un pilote dont le permis n'a pas
+     * encore été vérifié : on ne l'affiche que si le permis est aussi validé. Un forçage manuel (V/J/X)
+     * reste une décision explicite de l'admin et n'est jamais reconditionné au permis.
+     */
+    private function dechargeDisplay(?array $participant, string $decharge): string
+    {
+        if ($decharge !== 'V' || !$participant) {
+            return $decharge;
+        }
+        $pid = (int)$participant['id'];
+        if ((string)($this->waiverOverrides[$pid]['status'] ?? '') !== '') {
+            return $decharge;
+        }
+        if ((string)($participant['participant_type'] ?? 'pilot') === 'passenger') {
+            return $decharge;
+        }
+        $statuses = $this->docStatuses[$pid]['permis'] ?? [];
+        return in_array('validated', $statuses, true) ? $decharge : '';
     }
 
     private function progress(?array $participant, string $decharge): array
